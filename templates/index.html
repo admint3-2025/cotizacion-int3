@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cotización</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://integrational3.com.mx/logorigen/integrational_std2.png" alt="Integrational3" class="logo">
+                <div>
+                    <h2>Sistema de Cotización</h2>
+                    <p>Soluciones Tecnológicas Integrales</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <a href="/nueva-cotizacion" target="_blank" class="btn btn-nueva-cotizacion">+ Nueva Cotización</a>
+                <span id="nombreUsuario" class="user-name"></span>
+                <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <!-- Navegación por pestañas -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('clientes')">👥 Clientes</button>
+            <button class="tab-btn" onclick="showTab('cotizaciones')">📋 Cotizaciones</button>
+            <a href="/productos" class="tab-btn">📦 Productos</a>
+            <a href="/usuarios" class="tab-btn" id="btnUsuarios" style="display: none;">👤 Usuarios</a>
+        </div>
+
+        <!-- Pestaña de Clientes -->
+        <div id="clientes" class="tab-content active">
+            <div class="section-header">
+                <h2>Gestión de Clientes</h2>
+                <button class="btn btn-primary" onclick="mostrarFormularioCliente()">Nuevo Cliente</button>
+            </div>
+
+            <!-- Formulario de nuevo cliente -->
+            <div id="form-cliente" class="form-container" style="display: none;">
+                <h3>Nuevo Cliente</h3>
+                <form id="cliente-form">
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" id="cliente-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="cliente-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="cliente-telefono">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <textarea id="cliente-direccion" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <input type="text" id="cliente-rfc">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <button type="button" class="btn btn-secondary" onclick="ocultarFormularioCliente()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de clientes -->
+            <div id="lista-clientes" class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>RFC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientes-tbody">
+                        <tr>
+                            <td colspan="4" class="text-center">Cargando clientes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pestaña de Cotizaciones -->
+        <div id="cotizaciones" class="tab-content">
+            <div class="section-header">
+                <h2>Cotizaciones Recientes</h2>
+            </div>
+
+            <div id="lista-cotizaciones" class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>No. Cotización</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Aprobación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cotizaciones-tbody">
+                        <tr>
+                            <td colspan="6" class="text-center">Cargando cotizaciones...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalles de cotización -->
+    <div id="modal-cotizacion" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Modal para crear producto rápido -->
+    <div id="modal-producto-rapido" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 550px;">
+            <span class="close" onclick="cerrarModalProductoRapido()">&times;</span>
+            <h3 style="margin-bottom: 25px; color: #3b82f6;">Crear Producto Rápido</h3>
+            <form id="form-producto-rapido">
+                <div class="form-group">
+                    <label>Código *</label>
+                    <input type="text" id="prod-codigo" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="prod-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="prod-descripcion" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <input type="text" id="prod-categoria" placeholder="Ej: Hardware, Software, Servicio">
+                </div>
+                <div class="form-group">
+                    <label>Precio *</label>
+                    <input type="number" id="prod-precio" min="0" step="0.01" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">💾 Crear Producto</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalProductoRapido()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div id="notification" class="notification"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado - Integrational3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+        
+        .message {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .info-box p {
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .info-box strong {
+            color: #1a5490;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+        
+        .warning {
+            color: #ffc107;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://integrational3.com.mx/logorigen/integrational_std2.png" alt="Integrational3">
+        </div>
+        
+        {% if error %}
+            <div class="icon error">❌</div>
+            <h1 class="error">Error</h1>
+            <p class="message">{{ error }}</p>
+        
+        {% elif ya_procesado %}
+            <div class="icon warning">⚠️</div>
+            <h1 class="warning">Ya Procesado</h1>
+            <p class="message">Esta cotización ya fue {{ 'aprobada' if estado == 'aprobado' else 'rechazada' }} anteriormente.</p>
+            {% if fecha %}
+            <div class="info-box">
+                <p><strong>Fecha de respuesta:</strong> {{ fecha }}</p>
+            </div>
+            {% endif %}
+        
+        {% elif estado == 'aprobado' %}
+            <div class="icon success">✅</div>
+            <h1 class="success">¡Cotización Aprobada!</h1>
+            <p class="message">Gracias por aprobar nuestra cotización. Nuestro equipo se pondrá en contacto con usted a la brevedad para continuar con el proceso.</p>
+            
+            {% if cotizacion %}
+            <div class="info-box">
+                <p><strong>Cotización:</strong> {{ cotizacion.numero_cotizacion }}</p>
+                <p><strong>Total:</strong> ${{ "{:,.2f}".format(cotizacion.total) }}</p>
+                {% if comentarios %}
+                <p><strong>Sus comentarios:</strong> {{ comentarios }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        
+        {% elif estado == 'rechazado' %}
+            <div class="icon error">❌</div>
+            <h1 class="error">Cotización Rechazada</h1>
+            <p class="message">Lamentamos que nuestra propuesta no cumpliera con sus expectativas. Agradecemos su tiempo y consideración.</p>
+            
+            {% if cotizacion %}
+            <div class="info-box">
+                <p><strong>Cotización:</strong> {{ cotizacion.numero_cotizacion }}</p>
+                {% if comentarios %}
+                <p><strong>Sus comentarios:</strong> {{ comentarios }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <p class="message" style="margin-top: 20px;">Si desea recibir una propuesta diferente, no dude en contactarnos.</p>
+        {% endif %}
+        
+        <div class="footer">
+            <p><strong>Integrational3</strong></p>
+            <p>Soluciones Tecnológicas Integrales</p>
+            <p>Tel: 449 356 6356 | Email: proyectos@integrational3.com.mx</p>
+        </div>
+    </div>
+</body>
+</html>

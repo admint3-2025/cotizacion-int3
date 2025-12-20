@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Aprobar' if accion == 'aprobar' else 'Rechazar' }} Cotización - Integrational3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        h1 {
+            color: #1a5490;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1a5490;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .info-box p {
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .info-box strong {
+            color: #1a5490;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-aprobar {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn-aprobar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-rechazar {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+        
+        .btn-rechazar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://integrational3.com.mx/logorigen/integrational_std2.png" alt="Integrational3">
+        </div>
+        
+        <h1>{{ 'Aprobar' if accion == 'aprobar' else 'Rechazar' }} Cotización</h1>
+        <p class="subtitle">{{ cotizacion.numero_cotizacion }}</p>
+        
+        <div class="info-box">
+            <p><strong>Cliente:</strong> {{ cotizacion.cliente_nombre }}</p>
+            <p><strong>Fecha:</strong> {{ cotizacion.fecha_creacion }}</p>
+            <p><strong>Total:</strong> ${{ "{:,.2f}".format(cotizacion.total) }}</p>
+        </div>
+        
+        {% if accion == 'rechazar' %}
+        <div class="warning">
+            <strong>⚠️ Atención:</strong> Está a punto de rechazar esta cotización. Esta acción no se puede deshacer.
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="comentarios">Comentarios {{ '(opcional)' if accion == 'aprobar' else '(requerido)' }}:</label>
+                <textarea id="comentarios" name="comentarios" placeholder="Ingrese sus comentarios u observaciones..." {{ 'required' if accion == 'rechazar' else '' }}></textarea>
+            </div>
+            
+            <button type="submit" class="btn {{ 'btn-aprobar' if accion == 'aprobar' else 'btn-rechazar' }}">
+                {{ '✅ Confirmar Aprobación' if accion == 'aprobar' else '❌ Confirmar Rechazo' }}
+            </button>
+        </form>
+    </div>
+</body>
+</html>

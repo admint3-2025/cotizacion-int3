@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Cotización - Integrational3</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://integrational3.com.mx/logorigen/integrational_std2.png" alt="Integrational3" class="logo">
+                <div>
+                    <h2>Nueva Cotización</h2>
+                    <p>Soluciones Tecnológicas Integrales</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <span id="nombreUsuario" class="user-name"></span>
+                <button onclick="window.close()" class="btn-logout">Cerrar</button>
+            </div>
+        </header>
+
+        <div class="tab-content active" style="display: block; padding: 30px;">
+            <h2 style="color: #1f2937; margin-bottom: 30px;">Crear Nueva Cotización</h2>
+            
+            <form id="cotizacion-form">
+                <div class="form-section">
+                    <h3>Datos del Cliente</h3>
+                    <div class="form-group">
+                        <label>Cliente *</label>
+                        <select id="cotizacion-cliente" required>
+                            <option value="">Seleccione un cliente...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Validez</label>
+                        <input type="date" id="cotizacion-validez">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Conceptos</h3>
+                    <div id="items-container"></div>
+                    <button type="button" class="btn btn-secondary" onclick="agregarItem()">Agregar Concepto</button>
+                </div>
+
+                <div class="form-section">
+                    <h3>Totales</h3>
+                    <div class="totales-box">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal-display">$0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>IVA (16%):</span>
+                            <span id="iva-display">$0.00</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>TOTAL:</span>
+                            <span id="total-display">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Notas</h3>
+                    <div class="form-group">
+                        <textarea id="cotizacion-notas" rows="3" placeholder="Notas adicionales, especificaciones, etc."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Condiciones Comerciales</h3>
+                    <div class="form-group">
+                        <textarea id="cotizacion-condiciones" rows="4" placeholder="Ejemplo:&#10;• Tiempo de entrega: 20 días&#10;• Condiciones de pago: 50% anticipo, 50% contra entrega&#10;• Vigencia: 15 días"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Guardar Cotización</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.close()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para crear producto rápido -->
+    <div id="modalProductoRapido" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 style="margin-bottom: 25px; color: #3b82f6;">Crear Producto Rápido</h3>
+            <form id="productoRapidoForm">
+                <input type="hidden" id="itemIndexProducto">
+                <div class="form-group">
+                    <label>Nombre del Producto *</label>
+                    <input type="text" id="productoRapidoNombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="productoRapidoDescripcion" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Precio *</label>
+                    <input type="number" id="productoRapidoPrecio" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select id="productoRapidoCategoria" required>
+                        <option value="Servicios">Servicios</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Software">Software</option>
+                        <option value="Licencias">Licencias</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Crear Producto</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalProductoRapido()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/nueva_cotizacion.js') }}"></script>
+</body>
+</html>

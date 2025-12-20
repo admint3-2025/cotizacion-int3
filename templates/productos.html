@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - Integrational3</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .productos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .productos-header h1 {
+            color: #1a5490;
+            font-size: 28px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-nuevo-producto {
+            background: #0066CC;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nuevo-producto:hover {
+            background: #1a5490;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .filtros {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtro-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filtro-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filtro-group select,
+        .filtro-group input[type="text"] {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .productos-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1a5490 0%, #0066CC 100%);
+            color: white;
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-producto {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .badge-servicio {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        .badge-activo {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-inactivo {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .precio {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .categoria-tag {
+            background: #e9ecef;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #138496;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-header h2 {
+            color: #1a5490;
+            font-size: 24px;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            line-height: 1;
+        }
+
+        .btn-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0066CC;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #0066CC;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1a5490;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://integrational3.com.mx/logorigen/integrational_std2.png" alt="Integrational3" class="logo">
+                <h1>Sistema de Cotización</h1>
+            </div>
+            <div class="user-info">
+                <span id="nombreUsuario"></span>
+                <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <a href="/" class="nav-tab">Cotizaciones</a>
+            <a href="/productos" class="nav-tab active">Productos</a>
+            <a href="/usuarios" class="nav-tab" id="btnUsuarios" style="display: none;">Usuarios</a>
+        </nav>
+
+        <div id="alert" class="alert"></div>
+
+        <div class="productos-header">
+            <h1>Gestión de Productos y Servicios</h1>
+            <div class="header-actions">
+                <button onclick="abrirModalNuevoProducto()" class="btn-nuevo-producto">
+                    + Nuevo Producto/Servicio
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <div class="filtro-group">
+                <label for="filtroTipo">Tipo:</label>
+                <select id="filtroTipo" onchange="cargarProductos()">
+                    <option value="">Todos</option>
+                    <option value="producto">Productos</option>
+                    <option value="servicio">Servicios</option>
+                </select>
+            </div>
+
+            <div class="filtro-group">
+                <label for="filtroCategoria">Categoría:</label>
+                <select id="filtroCategoria" onchange="cargarProductos()">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+
+            <div class="filtro-group">
+                <label for="filtroBuscar">Buscar:</label>
+                <input type="text" id="filtroBuscar" placeholder="Código o nombre..." onkeyup="filtrarTabla()">
+            </div>
+
+            <div class="filtro-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="mostrarInactivos" onchange="cargarProductos()">
+                    <span>Mostrar inactivos</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="productos-table">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Unidad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                Cargando productos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo/Editar Producto -->
+    <div id="modalProducto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Nuevo Producto/Servicio</h2>
+                <button class="btn-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <form id="formProducto">
+                <input type="hidden" id="productoId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="codigo">Código *</label>
+                        <input type="text" id="codigo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo">Tipo *</label>
+                        <select id="tipo" required>
+                            <option value="producto">Producto</option>
+                            <option value="servicio">Servicio</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" id="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="precio">Precio *</label>
+                        <input type="number" id="precio" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unidad">Unidad *</label>
+                        <select id="unidad" required>
+                            <option value="pza">Pieza</option>
+                            <option value="servicio">Servicio</option>
+                            <option value="hr">Hora</option>
+                            <option value="dia">Día</option>
+                            <option value="mes">Mes</option>
+                            <option value="kg">Kilogramo</option>
+                            <option value="lt">Litro</option>
+                            <option value="m">Metro</option>
+                            <option value="m2">Metro cuadrado</option>
+                            <option value="m3">Metro cúbico</option>
+                            <option value="caja">Caja</option>
+                            <option value="paquete">Paquete</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <input type="text" id="categoria" list="categoriasList">
+                        <datalist id="categoriasList"></datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activo">Estado *</label>
+                        <select id="activo" required>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" onclick="cerrarModal()" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/productos.js"></script>
+</body>
+</html>
