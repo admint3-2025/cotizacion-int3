@@ -336,8 +336,12 @@ def enviar_email(cotizacion_id):
                 exitosos += 1
             else:
                 fallidos += 1
-        
-        # Construir mensaje de resultado
+                # Guardar emails destino en la cotización
+        if exitosos > 0:
+            emails_str = ','.join(emails)
+            db.actualizar_emails_destino(cotizacion_id, emails_str)
+            print(f"[API] Emails destino guardados: {emails_str}")
+                # Construir mensaje de resultado
         if exitosos > 0 and fallidos == 0:
             mensaje = f'Cotización enviada exitosamente a {exitosos} destinatario(s)'
             return jsonify({
@@ -671,13 +675,34 @@ def aprobar_cotizacion(token):
         if request.method == 'POST':
             comentarios = request.form.get('comentarios', '')
             if db.actualizar_estado_aprobacion(token, 'aprobado', comentarios):
-                # Enviar email de confirmación al cliente
-                email_sender.enviar_confirmacion_aprobacion(
-                    cotizacion.get('cliente_email', ''),
-                    cotizacion,
-                    'aprobado',
-                    comentarios
-                )
+                # Enviar email de confirmación a los destinatarios originales
+                emails_destino = cotizacion.get('emails_destino', '')
+                destinatarios = [e.strip() for e in emails_destino.split(',') if e.strip()] if emails_destino else []
+                
+                # Fallback al email del cliente si no hay destinos guardados
+                if not destinatarios:
+                    cliente_email = cotizacion.get('cliente_email', '')
+                    if cliente_email:
+                        destinatarios = [cliente_email]
+                
+                print(f"[DEBUG] Enviando confirmación a: {destinatarios}")
+                print(f"[DEBUG] Cotización: {cotizacion.get('numero_cotizacion')}")
+                
+                # Enviar a cada destinatario
+                for email_dest in destinatarios:
+                    try:
+                        resultado = email_sender.enviar_confirmacion_aprobacion(
+                            email_dest,
+                            cotizacion,
+                            'aprobado',
+                            comentarios
+                        )
+                        print(f"[DEBUG] Resultado envío a {email_dest}: {resultado}")
+                    except Exception as e:
+                        print(f"[ERROR] Error al enviar confirmación a {email_dest}: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
+                
                 return render_template('aprobacion_resultado.html',
                                      estado='aprobado',
                                      cotizacion=cotizacion,

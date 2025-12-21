@@ -679,6 +679,22 @@ class Database:
         
         return affected > 0
     
+    def actualizar_emails_destino(self, cotizacion_id, emails):
+        """Actualizar los emails destino de una cotización"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE cotizaciones 
+            SET emails_destino = ?
+            WHERE id = ?
+        ''', (emails, cotizacion_id))
+        
+        conn.commit()
+        conn.close()
+        
+        return True
+    
     def obtener_categorias(self):
         """Obtener lista única de categorías de productos"""
         conn = self.get_connection()
