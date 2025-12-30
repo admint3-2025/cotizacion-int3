@@ -2,6 +2,7 @@
 let productos = [];
 let itemCounter = 0;
 let inactividadTimer = null;
+let cotizacionEditando = null; // ID de cotización en edición
 const TIEMPO_INACTIVIDAD = 5 * 60 * 1000; // 5 minutos
 
 // Inicialización
@@ -29,8 +30,17 @@ window.addEventListener('DOMContentLoaded', async () => {
             formProdRapido.addEventListener('submit', crearProductoRapido);
         }
         
-        // Agregar item inicial
-        agregarItem();
+        // Verificar si se está editando una cotización
+        const urlParams = new URLSearchParams(window.location.search);
+        const editarId = urlParams.get('editar');
+        
+        if (editarId) {
+            // Cargar cotización para editar
+            await cargarCotizacionParaEditar(editarId);
+        } else {
+            // Agregar item inicial solo si es nueva cotización
+            agregarItem();
+        }
         
         // Iniciar temporizador de inactividad
         iniciarTemporizadorInactividad();
@@ -62,6 +72,13 @@ function resetearTemporizador() {
         }
         window.location.href = '/login';
     }, TIEMPO_INACTIVIDAD);
+}
+
+// Función para volver al inicio
+function volverAlInicio() {
+    if (confirm('¿Está seguro que desea salir? Los cambios no guardados se perderán.')) {
+        window.location.href = '/';
+    }
 }
 
 async function cargarProductos() {
@@ -212,23 +229,34 @@ async function crearCotizacion(e) {
     };
     
     try {
-        const response = await fetch('/api/cotizaciones', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
+        let response;
+        if (cotizacionEditando) {
+            // Actualizar cotización existente
+            response = await fetch(`/api/cotizaciones/${cotizacionEditando}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Crear nueva cotización
+            response = await fetch('/api/cotizaciones', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+        }
         
         if (response.ok) {
-            alert('Cotización creada exitosamente');
-            // Opcional: cerrar ventana
-            setTimeout(() => window.close(), 1000);
+            alert(cotizacionEditando ? 'Cotización actualizada exitosamente' : 'Cotización creada exitosamente');
+            // Redirigir al índice
+            setTimeout(() => window.location.href = '/', 1000);
         } else {
             const error = await response.json();
-            alert('Error: ' + (error.message || 'Error al crear cotización'));
+            alert('Error: ' + (error.message || 'Error al procesar cotización'));
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al crear cotización');
+        alert('Error al procesar cotización');
     }
 }
 
@@ -283,5 +311,81 @@ async function crearProductoRapido(e) {
     } catch (error) {
         console.error('Error:', error);
         alert('Error al crear producto');
+    }
+}
+
+// Cargar cotización para editar
+async function cargarCotizacionParaEditar(cotizacionId) {
+    try {
+        const response = await fetch(`/api/cotizaciones/${cotizacionId}`);
+        const cotizacion = await response.json();
+        
+        // Guardar ID de cotización en edición
+        cotizacionEditando = cotizacionId;
+        
+        // Cargar datos en el formulario
+        document.getElementById('cotizacion-cliente').value = cotizacion.cliente_id;
+        document.getElementById('cotizacion-validez').value = cotizacion.fecha_validez || '';
+        document.getElementById('cotizacion-notas').value = cotizacion.notas || '';
+        
+        const condicionesField = document.getElementById('cotizacion-condiciones');
+        if (condicionesField) {
+            condicionesField.value = cotizacion.condiciones_comerciales || '';
+        }
+        
+        // Limpiar items actuales
+        const container = document.getElementById('items-container');
+        container.innerHTML = '';
+        itemCounter = 0;
+        
+        // Cargar items de la cotización
+        for (const item of cotizacion.items) {
+            agregarItem();
+            
+            // Esperar que el item se agregue al DOM
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            const itemDiv = document.getElementById(`item-${itemCounter}`);
+            if (itemDiv) {
+                const productoSelect = itemDiv.querySelector('.item-producto');
+                const conceptoInput = itemDiv.querySelector('.item-concepto');
+                const descripcionInput = itemDiv.querySelector('.item-descripcion');
+                const cantidadInput = itemDiv.querySelector('.item-cantidad');
+                const precioInput = itemDiv.querySelector('.item-precio');
+                
+                // Si tiene producto_id, seleccionarlo
+                if (item.producto_id && productoSelect) {
+                    productoSelect.value = item.producto_id;
+                }
+                
+                if (conceptoInput) conceptoInput.value = item.concepto;
+                if (descripcionInput) descripcionInput.value = item.descripcion || '';
+                if (cantidadInput) cantidadInput.value = item.cantidad;
+                if (precioInput) precioInput.value = item.precio_unitario;
+            }
+        }
+        
+        calcularTotales();
+        
+        // Cambiar títulos de la página
+        const tituloHeader = document.querySelector('header h2');
+        if (tituloHeader) {
+            tituloHeader.textContent = 'Editar Cotización';
+        }
+        
+        const tituloSeccion = document.querySelector('.tab-content h2');
+        if (tituloSeccion) {
+            tituloSeccion.textContent = 'Editar Cotización';
+        }
+        
+        // Cambiar texto del botón
+        const btnSubmit = document.querySelector('#cotizacion-form button[type="submit"]');
+        if (btnSubmit) {
+            btnSubmit.innerHTML = '💾 Actualizar Cotización';
+        }
+        
+    } catch (error) {
+        console.error('Error al cargar cotización:', error);
+        alert('Error al cargar cotización: ' + error.message);
     }
 }

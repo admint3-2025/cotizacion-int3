@@ -102,19 +102,22 @@ class EmailSender:
         
         # Generar botones de aprobación si existe token
         botones_aprobacion = ""
+        # TEMPORALMENTE DESHABILITADO - Descomentar para producción
+        """
         if cotizacion_data.get('token_aprobacion'):
             base_url = Config.BASE_URL if hasattr(Config, 'BASE_URL') else 'http://localhost:5000'
             aprobar_url = f"{base_url}/aprobar/{cotizacion_data['token_aprobacion']}"
             rechazar_url = f"{base_url}/rechazar/{cotizacion_data['token_aprobacion']}"
             
-            botones_aprobacion = f"""
+            botones_aprobacion = f\"\"\"
                 <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f0f8ff; border-radius: 10px;">
                     <h3 style="color: #1a5490; margin-bottom: 15px;">¿Desea aprobar esta cotización?</h3>
                     <p style="color: #666; margin-bottom: 20px;">Haga clic en una de las opciones:</p>
                     <a href="{aprobar_url}" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 10px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">✅ APROBAR COTIZACIÓN</a>
                     <a href="{rechazar_url}" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #dc3545, #c82333); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 10px; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);">❌ RECHAZAR COTIZACIÓN</a>
                 </div>
-            """
+            \"\"\"
+        """
         
         html = f"""
         <!DOCTYPE html>

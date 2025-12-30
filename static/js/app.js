@@ -542,6 +542,17 @@ function limpiarFormularioCotizacion() {
 // Editar cotización existente
 async function editarCotizacion(cotizacionId) {
     try {
+        // Redirigir a la página de nueva cotización con el ID para editar
+        window.location.href = `/nueva-cotizacion?editar=${cotizacionId}`;
+    } catch (error) {
+        console.error('Error al editar cotización:', error);
+        showNotification('Error al cargar cotización: ' + error.message, 'error');
+    }
+}
+
+// FUNCIÓN ANTERIOR PARA REFERENCIA (YA NO SE USA)
+async function editarCotizacionViejo(cotizacionId) {
+    try {
         const response = await fetch(`/api/cotizaciones/${cotizacionId}`);
         const cotizacion = await response.json();
         

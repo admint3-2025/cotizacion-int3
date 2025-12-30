@@ -2,6 +2,7 @@ import os
 import urllib.request
 from io import BytesIO
 from datetime import datetime
+import pytz
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -164,7 +165,8 @@ class PDFGenerator:
         
         # Formatear el número de cotización
         num_cotizacion = cotizacion_data['numero_cotizacion'].replace('COT-', 'INT-')
-        fecha_cot = datetime.now().strftime('%d/%m/%Y')
+        tz_mexico = pytz.timezone('America/Mexico_City')
+        fecha_cot = datetime.now(tz_mexico).strftime('%d/%m/%Y')
         
         cotizacion_content = [
             [Paragraph('<b>COTIZACIÓN</b>', titulo_seccion)],

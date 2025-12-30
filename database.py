@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import pytz
 from config import Config
 import hashlib
 import secrets
@@ -195,7 +196,8 @@ class Database:
         cursor = conn.cursor()
         
         # Generar número de cotización con formato INT-
-        fecha_actual = datetime.now()
+        tz_mexico = pytz.timezone('America/Mexico_City')
+        fecha_actual = datetime.now(tz_mexico)
         cursor.execute('SELECT COUNT(*) as total FROM cotizaciones')
         total = cursor.fetchone()['total']
         numero_cotizacion = f"INT-{fecha_actual.strftime('%Y%m%d')}-{total + 1:04d}"

@@ -1,11 +1,19 @@
 # Sistema de Cotización Local
 
+## Configuración Importante
+- **Zona Horaria**: America/Mexico_City (UTC-6)
+- Configurado con `pytz` en database.py y pdf_generator.py
+- **Entorno de Producción**: Linux Alpine (servidor local)
+- Email SMTP: Titan (smtp.titan.email:587) con contacto@integrational3.com.mx
+
 ## Estado del Proyecto
 - [x] Estructura del proyecto creada
-- [ ] Backend implementado
-- [ ] Frontend completado
-- [ ] Sistema de PDFs configurado
-- [ ] Sistema de emails configurado
+- [x] Backend implementado
+- [x] Frontend completado
+- [x] Sistema de PDFs configurado
+- [x] Sistema de emails configurado
+- [x] Sistema de aprobación con tokens
+- [x] Edición de clientes y cotizaciones
 
 ## Características
 - Sistema de cotización local con Python Flask
